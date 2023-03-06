@@ -1,24 +1,16 @@
 function ConvertHandler() {
-  const validUnits = ["gal", "l", "lbs", "kg", "mi", "km"];
   this.getNum = function (input) {
     // if input has no digit defualt to 1
     if (!/\d/.test(input)) return 1;
-    // has multiple division
-    const num = input.match(/[0-9./]+/g)[0];
-    if (num.includes("/", 2)) {
-      console.log({ num });
-      return false;
-    }
 
-    if (num.includes("/", 1)) {
-      const sep = num.split("/");
-      const result = Number(sep[0]) / Number(sep[1]);
-      return result;
-    }
-    return Number(num);
+    const num = input.match(/[0-9./]+/g)[0];
+    // has multiple division
+    const numOfDivision = num.match(/\//g)?.length;
+    return numOfDivision >= 2 ? false : num;
   };
 
   this.getUnit = function (input) {
+    const validUnits = ["gal", "l", "lbs", "kg", "mi", "km"];
     // if input has no word
     if (!/[a-zA-Z]/.test(input)) return false;
     // select unit (all aplhabet character)
@@ -50,23 +42,31 @@ function ConvertHandler() {
     const lbsToKg = 0.453592;
     const miToKm = 1.60934;
 
-    console.log({ initNum, initUnit });
+    let inputNum = initNum;
+    if (typeof initNum === "number") {
+      inputNum = initNum;
+    } else if (initNum.includes("/")) {
+      const sep = inputNum.split("/");
+      inputNum = Number(sep[0]) / Number(sep[1]);
+    } else {
+      inputNum = Number(inputNum);
+    }
 
     const returnUnit = this.getReturnUnit(initUnit);
 
     const returnNum = () => {
-      if (initUnit === "mi") return parseFloat(initNum * miToKm);
-      if (initUnit === "km") return parseFloat(initNum / miToKm);
-      if (initUnit === "gal") return parseFloat(initNum * galToL);
-      if (initUnit === "L") return parseFloat(initNum / galToL);
-      if (initUnit === "lbs") return parseFloat(initNum * lbsToKg);
-      if (initUnit === "kg") return parseFloat(initNum / lbsToKg);
+      if (initUnit === "mi") return parseFloat(inputNum * miToKm);
+      if (initUnit === "km") return parseFloat(inputNum / miToKm);
+      if (initUnit === "gal") return parseFloat(inputNum * galToL);
+      if (initUnit === "L") return parseFloat(inputNum / galToL);
+      if (initUnit === "lbs") return parseFloat(inputNum * lbsToKg);
+      if (initUnit === "kg") return parseFloat(inputNum / lbsToKg);
     };
 
     let result = {
-      initNum,
+      initNum: inputNum,
       initUnit,
-      returnNum: returnNum().toFixed(5),
+      returnNum: Number(returnNum().toFixed(5)),
       returnUnit,
       string: this.getString(initNum, initUnit, returnNum, returnUnit),
     };
@@ -75,9 +75,9 @@ function ConvertHandler() {
   };
 
   this.getString = function (initNum, initUnit, returnNum, returnUnit) {
-    return `${initNum} ${this.spellOutUnit(
-      initUnit
-    )} converts to ${returnNum().toFixed(5)} ${returnUnit}`;
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${Number(
+      returnNum().toFixed(5)
+    )} ${this.spellOutUnit(returnUnit)}`;
   };
 }
 
