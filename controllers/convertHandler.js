@@ -15,7 +15,7 @@ function ConvertHandler() {
     if (numOfDivision >= 2) return false;
     // single "/"
     const [numerator, denominator] = numString.split("/");
-    return parseFloat((+numerator / +denominator).toFixed(2));
+    return parseFloat(+numerator / +denominator);
   };
 
   this.getUnit = function (input) {

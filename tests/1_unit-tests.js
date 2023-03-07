@@ -23,7 +23,7 @@ suite("Unit Tests", function () {
     });
     // #4
     test("#4 read a fractional input with decimal", function () {
-      assert.strictEqual(inputNum("2.5/3km"), 0.83);
+      assert.strictEqual(inputNum("5.5/5km"), 1.1);
     });
     // #5
     test("#5 return an error on a double-fraction", function () {
