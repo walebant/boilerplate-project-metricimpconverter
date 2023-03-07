@@ -9,6 +9,8 @@ module.exports = function (app) {
   app.route("/api/convert").get((req, res) => {
     const input = req.query.input;
 
+    if (!input) res.send("invalid input");
+
     const initNum = convertHandler.getNum(input);
     const initUnit = convertHandler.getUnit(input);
 
@@ -16,7 +18,24 @@ module.exports = function (app) {
     if (!initNum) return res.send("invalid number");
     if (!initUnit) return res.send("invalid unit");
 
-    const result = convertHandler.convert(initNum, initUnit);
-    res.send(result);
+    const returnUnit = convertHandler.getReturnUnit(initUnit);
+    const returnNum = convertHandler.convert(initNum, initUnit);
+
+    const string = convertHandler.getString(
+      //initNum: should be original input with division
+      initNum,
+      initUnit,
+      returnNum,
+      returnUnit
+    );
+
+    res.send({
+      //initNum: should be original input with division
+      initNum,
+      initUnit,
+      returnNum,
+      returnUnit,
+      string,
+    });
   });
 };
